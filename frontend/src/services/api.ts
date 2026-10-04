@@ -1,51 +1,65 @@
-import axios from 'axios';
-import { PredictionResponse, AnalyticsData } from '../types';
+import axios from "axios";
+import { PredictionResponse, AnalyticsData } from "../types";
 
-const API_BASE_URL = '/api/v1';
+const API_BASE_URL = "https://veritasai-backend-5qjs.onrender.com/api/v1";
 
 const client = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 export const apiService = {
   // Detection APIs
-  analyzeText: async (text: string, title?: string, language: string = 'en', input_type: string = 'text'): Promise<PredictionResponse> => {
-    const res = await client.post('/detect/analyze', { text, title, language, input_type });
+  analyzeText: async (
+    text: string,
+    title?: string,
+    language: string = "en",
+    input_type: string = "text",
+  ): Promise<PredictionResponse> => {
+    const res = await client.post("/detect/analyze", {
+      text,
+      title,
+      language,
+      input_type,
+    });
     return res.data;
   },
 
   uploadImageOCR: async (file: File): Promise<PredictionResponse> => {
     const formData = new FormData();
-    formData.append('file', file);
-    const res = await client.post('/ocr/upload-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    formData.append("file", file);
+    const res = await client.post("/ocr/upload-image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
   },
 
   uploadDocumentPDF: async (file: File): Promise<PredictionResponse> => {
     const formData = new FormData();
-    formData.append('file', file);
-    const res = await client.post('/ocr/upload-document', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    formData.append("file", file);
+    const res = await client.post("/ocr/upload-document", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
   },
 
   // Analytics & History
   getAnalytics: async (): Promise<AnalyticsData> => {
-    const res = await client.get('/analytics/overview');
+    const res = await client.get("/analytics/overview");
     return res.data;
   },
 
-  getHistory: async (search?: string, verdict?: string, bookmarked?: boolean) => {
+  getHistory: async (
+    search?: string,
+    verdict?: string,
+    bookmarked?: boolean,
+  ) => {
     const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (verdict) params.append('verdict', verdict);
-    if (bookmarked) params.append('bookmarked_only', 'true');
+    if (search) params.append("search", search);
+    if (verdict) params.append("verdict", verdict);
+    if (bookmarked) params.append("bookmarked_only", "true");
     const res = await client.get(`/history/list?${params.toString()}`);
     return res.data;
   },
@@ -62,7 +76,10 @@ export const apiService = {
 
   // Chat Assistant
   queryAssistant: async (message: string, context_prediction?: any) => {
-    const res = await client.post('/chat/query', { message, context_prediction });
+    const res = await client.post("/chat/query", {
+      message,
+      context_prediction,
+    });
     return res.data;
   },
 
@@ -73,11 +90,11 @@ export const apiService = {
 
   // Admin
   getAdminUsers: async () => {
-    const res = await client.get('/admin/users');
+    const res = await client.get("/admin/users");
     return res.data;
   },
   retrainModel: async () => {
-    const res = await client.post('/admin/retrain-model');
+    const res = await client.post("/admin/retrain-model");
     return res.data;
-  }
+  },
 };
